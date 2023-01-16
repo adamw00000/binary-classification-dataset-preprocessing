@@ -92,11 +92,16 @@ def cluster_vis(df, dataset, use_binary_class=False, show_labels=False):
     trans_data = tsne.fit_transform(X)
     palette = sns.color_palette("husl", len(np.unique(y)))
 
+    sns.set_theme()
+    if use_binary_class:
+        y = np.where(y == 1, 'Inlier', 'Outlier')
+
     plt.figure(figsize=(10, 8))
     scatter = sns.scatterplot(x=trans_data[:, 0], y=trans_data[:, 1], hue=y,
+        edgecolor='k',
+        linewidth=0.2,
         palette=palette,
         s=40 / np.log10(len(df)))
-    plt.legend()
 
     classes_shown = set()
     if show_labels:
@@ -110,11 +115,15 @@ def cluster_vis(df, dataset, use_binary_class=False, show_labels=False):
                     PathEffects.withStroke(linewidth=0.5, foreground='k')
                 ])
     
-    plt.title('Original classes' if not use_binary_class else 'Binary classes')
+    # plt.title('Original classes' if not use_binary_class else 'Binary classes')
     plt.savefig(
         os.path.join('plots', f'{dataset}{"_binary" if use_binary_class else ""}.png'),
         bbox_inches='tight',
-        dpi=300
+        dpi=600,
+    )
+    plt.savefig(
+        os.path.join('plots', f'{dataset}{"_binary" if use_binary_class else ""}.pdf'),
+        bbox_inches='tight',
     )
     plt.show()
     plt.close()
